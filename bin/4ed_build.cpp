@@ -546,9 +546,9 @@ buildsuper(Arena *arena, char *cdir, char *file, u32 arch){
 }
 
 internal void
-build_main(Arena *arena, char *cdir, b32 update_local_theme, u32 flags, u32 arch){
+build_main(Arena *arena, char *cdir, b32 update_local_theme, b32 update_dist_files, u32 flags, u32 arch){
     char *dir = fm_str(arena, BUILD_DIR);
-    
+
     {
         char *file = fm_str(arena, "4ed_app_target.cpp");
         char **exports = fm_list_one_item(arena, "app_get_functions");
@@ -570,14 +570,33 @@ build_main(Arena *arena, char *cdir, b32 update_local_theme, u32 flags, u32 arch
         fm_make_folder_if_missing(arena, themes_folder);
         fm_copy_all(source_themes_folder, themes_folder);
     }
-    
+
+    if (update_dist_files) {
+        // TODO(lclutz): Copy the dist_folder recursively instead of individually.
+        char *dist_folder = fm_str(arena, "..\\build\\4coder_fleury");
+        char *source_dist_folder = fm_str(arena, "..\\4coder-non-source\\dist_files\\4coder_fleury");
+        fm_clear_folder(dist_folder);
+        fm_make_folder_if_missing(arena, dist_folder);
+        fm_copy_all(source_dist_folder, dist_folder);
+        dist_folder = fm_str(arena, "..\\build\\audio_test");
+        source_dist_folder = fm_str(arena, "..\\4coder-non-source\\dist_files\\audio_test");
+        fm_clear_folder(dist_folder);
+        fm_make_folder_if_missing(arena, dist_folder);
+        fm_copy_all(source_dist_folder, dist_folder);
+        dist_folder = fm_str(arena, "..\\build\\fonts");
+        source_dist_folder = fm_str(arena, "..\\4coder-non-source\\dist_files\\fonts");
+        fm_clear_folder(dist_folder);
+        fm_make_folder_if_missing(arena, dist_folder);
+        fm_copy_all(source_dist_folder, dist_folder);
+    }
+
     fflush(stdout);
 }
 
 internal void
 standard_build(Arena *arena, char *cdir, u32 flags, u32 arch){
     buildsuper(arena, cdir, fm_str(arena, default_custom_target), arch);
-    build_main(arena, cdir, true, flags, arch);
+    build_main(arena, cdir, true, true, flags, arch);
 }
 
 internal char*
@@ -604,10 +623,10 @@ package_for_arch(Arena *arena, u32 arch, char *cdir, char *build_dir, char *pack
     printf(" dir = %s;\n", dir);
     printf(" zip_dir = %s;\n", zip_dir);
     fflush(stdout);
-    
+
     buildsuper(arena, cdir, fm_str(arena, default_custom_target), arch);
-    build_main(arena, cdir, false, flags, arch);
-    
+    build_main(arena, cdir, false, false, flags, arch);
+
     fm_clear_folder(parent_dir);
     fm_make_folder_if_missing(arena, parent_dir);
     
