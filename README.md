@@ -59,6 +59,16 @@ SOFTWARE.
    B. On linux run "bin\build-linux.sh"
    C. On linux run "bin\build-mac.sh"
 
+```shell
+mkdir 4ed
+cd 4ed
+git clone https://github.com/lclutz/4coder.git code
+git clone https://github.com/lclutz/4coder-non-source.git
+cd code
+.\bin\build.bat      # Windows
+./bin/build-linux.sh # Linux
+./bin/build-mac.sh   # Mac
+```
 
 # Notes on Major Issues
 
